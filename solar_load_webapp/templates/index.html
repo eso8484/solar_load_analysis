@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar Load Analysis Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Solar Load Analysis Tool</h1>
+
+        <!-- Appliance Input Form -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Add/Edit Appliance</h5>
+                <form id="appliance-form">
+                    <input type="hidden" id="edit-index" name="index">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="name" class="form-label">Appliance Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col">
+                            <label for="power" class="form-label">Power (W)</label>
+                            <input type="number" step="any" class="form-control" id="power" name="power" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="quantity" class="form-label">Quantity</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                        </div>
+                        <div class="col">
+                            <label for="hours" class="form-label">Hours/Day</label>
+                            <input type="number" step="any" class="form-control" id="hours" name="hours" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Add/Update Appliance</button>
+                    <button type="button" class="btn btn-secondary" onclick="clearForm()">Clear</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Appliance List -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Appliance List</h5>
+                <ul class="list-group" id="appliance-list">
+                    {% for appliance in appliances %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ appliance.name }} - {{ appliance.power }}W x {{ appliance.quantity }} for {{ appliance.hours_per_day }}h/day
+                        <div>
+                            <button class="btn btn-sm btn-warning" onclick="editAppliance({{ loop.index0 }})">Edit</button>
+                            <button class="btn btn-sm btn-danger" onclick="removeAppliance({{ loop.index0 }})">Remove</button>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- System Parameters -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">System Parameters</h5>
+                <form id="analysis-form">
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="battery_voltage" class="form-label">Battery Voltage (V)</label>
+                            <input type="number" step="any" class="form-control" id="battery_voltage" name="battery_voltage" value="48" required>
+                        </div>
+                        <div class="col">
+                            <label for="sun_hours" class="form-label">Sun Hours</label>
+                            <input type="number" step="any" class="form-control" id="sun_hours" name="sun_hours" value="5" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="efficiency" class="form-label">System Efficiency</label>
+                            <input type="number" step="any" class="form-control" id="efficiency" name="efficiency" value="0.7" required>
+                        </div>
+                        <div class="col">
+                            <label for="dod" class="form-label">Battery DoD</label>
+                            <input type="number" step="any" class="form-control" id="dod" name="dod" value="0.95" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            <label for="autonomy" class="form-label">Autonomy Days</label>
+                            <input type="number" step="any" class="form-control" id="autonomy" name="autonomy" value="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Run Load Analysis</button>
+                    <button type="button" class="btn btn-primary" onclick="exportCSV()">Export to CSV</button>
+                    <button type="button" class="btn btn-primary" onclick="exportPDF()">Export to PDF</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Results -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Analysis Results</h5>
+                <pre id="results" class="p-3"></pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

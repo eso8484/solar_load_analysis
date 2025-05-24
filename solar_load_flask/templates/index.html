@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Solar Load Analysis</title>
+</head>
+<body>
+  <h1>Solar Load Analysis</h1>
+
+  <h2>Add Appliance</h2>
+  <form method="post">
+    Name: <input type="text" name="name" required><br>
+    Power (W): <input type="number" step="0.01" name="power" required><br>
+    Hours/Day: <input type="number" step="0.01" name="hours" required><br>
+    Quantity: <input type="number" name="quantity" required><br>
+    <button type="submit">Add Appliance</button>
+  </form>
+
+  <h2>Appliance List</h2>
+  {% if appliances %}
+    <table border="1" cellpadding="5" cellspacing="0">
+      <tr>
+        <th>Name</th>
+        <th>Power (W)</th>
+        <th>Hours/Day</th>
+        <th>Quantity</th>
+        <th>Energy (Wh)</th>
+        <th>Actions</th>
+      </tr>
+      {% for appliance in appliances %}
+        <tr>
+          <td>{{ appliance.name }}</td>
+          <td>{{ appliance.power }}</td>
+          <td>{{ appliance.hours }}</td>
+          <td>{{ appliance.quantity }}</td>
+          <td>{{ "%.2f"|format(appliance.energy) }}</td>
+          <td>
+            <a href="{{ url_for('edit', index=loop.index0) }}">Edit</a> |
+            <a href="{{ url_for('delete', index=loop.index0) }}">Delete</a>
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+
+    <h3>Total Energy: {{ "%.2f"|format(summary.total_energy) }} Wh</h3>
+
+    <form action="{{ url_for('export_pdf') }}">
+      <button type="submit">Export to PDF</button>
+    </form>
+  {% else %}
+    <p>No appliances added yet.</p>
+  {% endif %}
+</body>
+</html>
